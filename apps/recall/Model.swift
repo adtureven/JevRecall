@@ -21,6 +21,7 @@ final class RecallModel: ObservableObject {
     var focusSearch: (() -> Void)?
     private var searchTask: Task<Void, Never>?
     private var generation = UUID()
+    private var searchCache: [String: SearchResult] = [:]
     private var writeBlocked = false
     private let preview: Bool
     let repository: ClipRepository
@@ -96,6 +97,7 @@ final class RecallModel: ObservableObject {
         client = JevClient(apiKey: cleanKey.isEmpty ? environmentKey : cleanKey, model: cleanModel, endpoint: url)
         settings = next
         settingsError = nil
+        searchCache.removeAll()
         discovery.updateClient(client)
         invalidateSearch()
         notice = "JEV 设置已保存并应用。"
@@ -126,10 +128,16 @@ final class RecallModel: ObservableObject {
         invalidateSearch()
         error = nil; busy = true; filter = "全部"
         let revision = generation, capturedQuery = query, capturedClips = clips
+        if let cached = searchCache[capturedQuery] {
+            result = cached; selectedID = cached.noMatch ? nil : cached.ranked.first?.id; busy = false
+            return
+        }
         searchTask = Task {
             do {
                 let response = try await client.search(query: capturedQuery, clips: capturedClips)
                 guard !Task.isCancelled, generation == revision else { return }
+                searchCache[capturedQuery] = response
+                if searchCache.count > 24, let oldest = searchCache.keys.first { searchCache.removeValue(forKey: oldest) }
                 result = response; selectedID = response.noMatch ? nil : response.ranked.first?.id
                 busy = false
             } catch is CancellationError {
@@ -145,7 +153,7 @@ final class RecallModel: ObservableObject {
         guard !writeBlocked else { error = "收藏文件读取失败，请先修复 .local/recall/library.json 再重新打开应用。"; return false }
         do {
             if !preview { try repository.save(next) } else { try ClipRepository.validate(next) }
-            clips = next; invalidateSearch(); error = nil
+            clips = next; searchCache.removeAll(); invalidateSearch(); error = nil
             return true
         } catch { self.error = error.localizedDescription; return false }
     }

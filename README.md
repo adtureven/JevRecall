@@ -84,6 +84,7 @@ JevRecall is a local-first utility:
 - Saved snippets remain in `.local/recall/library.json` and are copied exactly as entered.
 - Offline keyword search scans the complete local text, title, and hint without a network request.
 - Semantic search sends the query plus the title, hint, category, and first 240 characters of snippets that are not marked local-only.
+- Repeated exact queries can be served from a small in-memory cache for the current app session; changing a saved item or JEV settings clears that cache.
 - Clipboard discovery, when enabled, sends the newly copied candidate text to the configured endpoint. Existing saved snippets are not sent for that decision.
 - The app does not monitor keystrokes, read documents from other applications, execute copied commands, or send messages on your behalf.
 - Pending discovery text is held briefly in memory. The app keeps only a bounded in-memory hash set to avoid repeatedly judging the same copy; it is not a clipboard history database.
