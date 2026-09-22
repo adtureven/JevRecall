@@ -93,7 +93,7 @@ struct RecallView: View {
             HStack(spacing: 12) {
                 Picker("查找方式", selection: $model.localSearch) { Text("按意思找 · JEV").tag(false); Text("关键词 · 离线").tag(true) }.pickerStyle(.segmented).frame(width: 270)
                 Spacer()
-                Text(model.localSearch ? "本地搜索完整原文，包含「仅本地」片段。" : "点击查找时，发送检索词及可检索片段摘要。")
+                Text(model.localSearch ? "本地搜索完整原文，包含「仅本地」片段。" : "停止输入约 0.35 秒后自动查找，也可按回车立即查找。")
                     .font(.system(size: 11)).foregroundStyle(muted)
             }
         }.padding(.horizontal, 26).padding(.bottom, 20)
@@ -337,6 +337,7 @@ struct QuickSearchView: View {
     }
 
     private func submit() {
+        if model.busy { return }
         if !candidates.isEmpty { copySelected() }
         else if model.result == nil && !model.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { model.search() }
     }
@@ -394,7 +395,7 @@ struct QuickSearchView: View {
                     }
                 }
             } else {
-                Text("按回车查找；选中结果后会复制并回到刚才的应用。\n⌃⌥Space 随时呼出，Esc 关闭。")
+                Text("输入后会自动查找；选中结果后按回车即可复制并回到刚才的应用。\n⌃⌥Space 随时呼出，Esc 关闭。")
                     .font(.system(size: 12)).foregroundStyle(muted).lineSpacing(4)
             }
         }.padding(18).frame(width: 640, height: 300, alignment: .topLeading)

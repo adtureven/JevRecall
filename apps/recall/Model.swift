@@ -4,8 +4,8 @@ import AppKit
 @MainActor
 final class RecallModel: ObservableObject {
     @Published var clips: [Clip] = []
-    @Published var query = "" { didSet { if query != oldValue { invalidateSearch() } } }
-    @Published var localSearch = false { didSet { if localSearch != oldValue { invalidateSearch() } } }
+    @Published var query = "" { didSet { if query != oldValue { invalidateSearch(); scheduleLiveSearch() } } }
+    @Published var localSearch = false { didSet { if localSearch != oldValue { invalidateSearch(); scheduleLiveSearch() } } }
     @Published var selectedID: String?
     @Published var result: SearchResult?
     @Published var busy = false
@@ -28,6 +28,7 @@ final class RecallModel: ObservableObject {
     let workspace: URL
     let discovery: ClipboardDiscovery
     private let settingsStore: JevSettingsStore
+    private var debounceTask: Task<Void, Never>?
 
     init(workspace: URL, preview: Bool = false) {
         self.workspace = workspace
@@ -103,7 +104,19 @@ final class RecallModel: ObservableObject {
 
     func invalidateSearch() {
         generation = UUID(); searchTask?.cancel(); searchTask = nil
+        debounceTask?.cancel(); debounceTask = nil
         busy = false; result = nil; notice = nil
+    }
+
+    private func scheduleLiveSearch() {
+        debounceTask?.cancel(); debounceTask = nil
+        guard !preview, !localSearch, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        debounceTask = Task { [weak self] in
+            do { try await Task.sleep(nanoseconds: 350_000_000) }
+            catch { return }
+            guard !Task.isCancelled, let self else { return }
+            self.search()
+        }
     }
 
     func search() {

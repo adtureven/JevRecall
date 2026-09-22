@@ -9,7 +9,7 @@ The project is intentionally small and inspectable: native SwiftUI/AppKit, local
 ## What it does
 
 - **Save once, reuse later.** Capture a clipboard item with `Ctrl + Option + C`, add a title and a reason to keep it, and copy the original text back unchanged.
-- **Search by intent.** Press `Ctrl + Option + Space`, describe the situation in your own words, then use `↑` / `↓` and `Return` to select and copy a result. Press the same shortcut again to close the quick search panel.
+- **Search by intent.** Press `Ctrl + Option + Space`, describe the situation in your own words, and see semantic results refresh about 350 ms after you pause typing. Use `↑` / `↓` and `Return` to select and copy a result. Press the same shortcut again to close the quick search panel.
 - **Discover useful copies.** Optional clipboard discovery asks JEV whether a newly copied text looks worth revisiting. The reminder stays out of the way and never saves anything without a click.
 - **Stay local when needed.** Mark a snippet as local-only to include it in offline keyword search while excluding it from semantic requests. Credential-like clipboard content is marked local-only by default.
 - **Keep context.** Saved items can include the source application, copy time, category, an editable title, and a short usage hint. Similar content is flagged before it creates a duplicate.
@@ -70,7 +70,7 @@ For normal use, open the gear button in the main window and edit the API key, en
 | `Ctrl + Option + Space` | Toggle the independent quick search panel |
 | `Ctrl + Option + C` | Capture the current clipboard text |
 | `↑` / `↓` | Move through quick search results |
-| `Return` | Copy the selected quick search result and return to the previous app |
+| `Return` | Copy the selected quick search result and return to the previous app; while a query is still loading, it does nothing |
 | `Cmd + Return` | Copy the selected item and return from the main window |
 | `Cmd + Shift + C` | Copy the original text without returning |
 | `Cmd + N` | Create a new snippet |
