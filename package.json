@@ -1,0 +1,17 @@
+{
+  "name": "jev-recall",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "JevRecall: a native macOS semantic clipboard shelf powered by JEV Decisions.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "bash scripts/build-recall.sh",
+    "start": "open build/Recall.app",
+    "test": "bash scripts/test-recall.sh",
+    "test:app": "bash scripts/test-recall-model.sh",
+    "test:discovery": "bash scripts/test-recall-discovery.sh",
+    "test:discovery:live": "bash scripts/test-recall-discovery.sh --live",
+    "test:live": "bash scripts/test-recall.sh --live"
+  }
+}
